@@ -9,12 +9,47 @@ import (
 
 func init() {
 
-	GetDB().Exec(
+	os.MkdirAll("data/", os.ModePerm)
+
+	db := GetDB()
+	defer db.Close()
+
+	db.Exec(
 		`CREATE TABLE IF NOT EXISTS config (
 			key VARCHAR(32) NOT NULL PRIMARY KEY,
-			value  VARCHAR(255)
+			value VARCHAR(255)
 		);`,
 	)
+
+	db.Exec(
+		`CREATE TABLE IF NOT EXISTS posts (
+			id INTEGER NOT NULL PRIMARY KEY,
+			slug VARCHAR(255) NOT NULL,
+			title VARCHAR(120) NOT NULL,
+			description VARCHAR(500),
+			body TEXT
+		)`,
+	)
+
+	db.Exec(`CREATE UNIQUE INDEX unique_post ON posts (slug)`)
+}
+
+func GetPostBySlug(slug string) (post *Post, err error) {
+
+	db := GetDB()
+	defer db.Close()
+
+	post = &Post{}
+
+	err = db.QueryRow(`SELECT * FROM posts WHERE slug = $1`, slug).Scan(
+		&post.ID,
+		&post.Slug,
+		&post.Title,
+		&post.Description,
+		&post.Body,
+	)
+
+	return
 }
 
 func SetConfig(name, value string) {
@@ -57,8 +92,6 @@ func GetConfig(name string) (v string) {
 }
 
 func GetDB() *sql.DB {
-
-	os.MkdirAll("data/", os.ModePerm)
 
 	db, err := sql.Open("sqlite3", "data/db")
 

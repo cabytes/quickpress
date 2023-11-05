@@ -17,10 +17,17 @@ func Load(mux *chi.Mux, theme *Theme) {
 	})
 
 	mux.Get("/{slug}", func(w http.ResponseWriter, r *http.Request) {
-		// Check is a page or a post
+
+		post, err := GetPostBySlug(chi.URLParam(r, "slug"))
+
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
 		theme.Render(w, "post.html", D{
 			"title": "Post",
-			"slug":  chi.URLParam(r, "slug"),
+			"post":  post,
 		})
 	})
 
