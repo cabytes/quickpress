@@ -9,6 +9,19 @@ import (
 
 func Load(mux *chi.Mux, theme *Theme) {
 
+	RenderNotFound := func(w http.ResponseWriter) {
+
+		w.WriteHeader(http.StatusNotFound)
+
+		err := theme.Render(w, "404.html", D{
+			"title": "Page not found",
+		})
+
+		if err != nil {
+			log.Default().Println(err)
+		}
+	}
+
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 		posts, _ := GetPosts()
@@ -28,7 +41,7 @@ func Load(mux *chi.Mux, theme *Theme) {
 		post, err := GetPostBySlug(chi.URLParam(r, "slug"))
 
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			RenderNotFound(w)
 			return
 		}
 
@@ -49,6 +62,14 @@ func Load(mux *chi.Mux, theme *Theme) {
 		if err != nil {
 			log.Default().Println(err)
 		}
+	})
+
+	mux.Get("/sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>`))
+	})
+
+	mux.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		RenderNotFound(w)
 	})
 
 	mux.Route("/admin", AdminLoader)
