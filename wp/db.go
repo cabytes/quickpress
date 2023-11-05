@@ -32,8 +32,6 @@ func init() {
 	)
 
 	db.Exec(`CREATE UNIQUE INDEX unique_post ON posts (slug)`)
-
-	go SetConfig("smtp_host", "smtp.google.com")
 }
 
 func GetPosts() (posts []*Post, err error) {
