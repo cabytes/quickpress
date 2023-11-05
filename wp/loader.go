@@ -17,7 +17,6 @@ func Load(mux *chi.Mux, theme *Theme) {
 	})
 
 	mux.Get("/{slug}", func(w http.ResponseWriter, r *http.Request) {
-		SetConfig("theme", "custom")
 		// Check is a page or a post
 		theme.Render(w, "post.html", D{
 			"title": "Post",

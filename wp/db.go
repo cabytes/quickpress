@@ -7,11 +7,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const DB_SYSTEM = "system"
-
 func init() {
 
-	GetDB(DB_SYSTEM).Exec(
+	GetDB().Exec(
 		`CREATE TABLE IF NOT EXISTS config (
 			key VARCHAR(32) NOT NULL PRIMARY KEY,
 			value  VARCHAR(255)
@@ -21,7 +19,7 @@ func init() {
 
 func SetConfig(name, value string) {
 
-	db := GetDB(DB_SYSTEM)
+	db := GetDB()
 	defer db.Close()
 
 	var found = 0
@@ -46,7 +44,7 @@ func SetConfig(name, value string) {
 
 func GetConfig(name string) (v string) {
 
-	db := GetDB(DB_SYSTEM)
+	db := GetDB()
 	defer db.Close()
 
 	row := db.QueryRow("SELECT value FROM config WHERE key = $1", name)
@@ -58,17 +56,17 @@ func GetConfig(name string) (v string) {
 	return
 }
 
-func GetDB(name string) *sql.DB {
+func GetDB() *sql.DB {
 
-	os.MkdirAll("data/db", os.ModePerm)
+	os.MkdirAll("data/", os.ModePerm)
 
-	db, err := sql.Open("sqlite3", "data/db/"+name)
+	db, err := sql.Open("sqlite3", "data/db")
 
 	if err != nil {
 		panic(err)
 	}
 
-	db.SetMaxOpenConns(10)
+	db.SetMaxOpenConns(1)
 
 	return db
 }
