@@ -12,7 +12,7 @@ var adminFS embed.FS
 
 func TestFallbackToEmbed(t *testing.T) {
 
-	efb := NewFallbackFS("./test", &adminFS)
+	efb := NewFakeEmbedFallback("./test", adminFS)
 
 	f, err := efb.Open("index.html")
 
