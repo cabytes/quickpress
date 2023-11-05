@@ -34,6 +34,37 @@ func init() {
 	db.Exec(`CREATE UNIQUE INDEX unique_post ON posts (slug)`)
 }
 
+func GetPosts() (posts []*Post, err error) {
+
+	db := GetDB()
+	defer db.Close()
+
+	posts = make([]*Post, 0)
+
+	rows, err := db.Query(`SELECT * FROM posts`)
+
+	for rows.Next() {
+
+		post := &Post{}
+
+		err = rows.Scan(
+			&post.ID,
+			&post.Slug,
+			&post.Title,
+			&post.Description,
+			&post.Body,
+		)
+
+		if err != nil {
+			return posts, err
+		}
+
+		posts = append(posts, post)
+	}
+
+	return
+}
+
 func GetPostBySlug(slug string) (post *Post, err error) {
 
 	db := GetDB()

@@ -46,7 +46,13 @@ func (fe *FakeEmbedFallback) Open(name string) (f fs.File, err error) {
 
 func (fe *FakeEmbedFallback) ReadDir(name string) (entries []fs.DirEntry, err error) {
 	fullPath := path.Clean(path.Join(fe.path, name))
-	return os.ReadDir(fullPath)
+	entries, err = os.ReadDir(fullPath)
+
+	if err != nil {
+		return fe.embeded.ReadDir(fullPath)
+	}
+
+	return
 }
 
 func (fe *FakeEmbedFallback) ReadFile(name string) (data []byte, err error) {

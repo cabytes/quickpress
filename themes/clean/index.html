@@ -2,5 +2,12 @@
 
 {{define "contents"}}
     {{template "header" .}}
-    Loaded theme:<strong>{{.theme}}</strong> 
+    
+    <ul>
+        {{range .posts}}
+        <li>
+            <a href="{{.Slug}}">{{.Title}}</a>
+        </li>
+        {{end}}
+    </ul>
 {{end}}
