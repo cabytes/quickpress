@@ -8,16 +8,16 @@ import (
 	"path"
 )
 
-type FakeEmbedFallback struct {
+type EmbedFallbackFS struct {
 	path    string
 	embeded embed.FS
 }
 
-func NewFakeEmbedFallback(path string, embeded embed.FS) *FakeEmbedFallback {
-	return &FakeEmbedFallback{path, embeded}
+func NewEmbedFallbackFS(path string, embeded embed.FS) *EmbedFallbackFS {
+	return &EmbedFallbackFS{path, embeded}
 }
 
-func (fe *FakeEmbedFallback) Open(name string) (f fs.File, err error) {
+func (fe *EmbedFallbackFS) Open(name string) (f fs.File, err error) {
 
 	fullPath := path.Clean(path.Join(fe.path, name))
 
@@ -44,7 +44,7 @@ func (fe *FakeEmbedFallback) Open(name string) (f fs.File, err error) {
 	return
 }
 
-func (fe *FakeEmbedFallback) ReadDir(name string) (entries []fs.DirEntry, err error) {
+func (fe *EmbedFallbackFS) ReadDir(name string) (entries []fs.DirEntry, err error) {
 	fullPath := path.Clean(path.Join(fe.path, name))
 	entries, err = os.ReadDir(fullPath)
 
@@ -55,7 +55,7 @@ func (fe *FakeEmbedFallback) ReadDir(name string) (entries []fs.DirEntry, err er
 	return
 }
 
-func (fe *FakeEmbedFallback) ReadFile(name string) (data []byte, err error) {
+func (fe *EmbedFallbackFS) ReadFile(name string) (data []byte, err error) {
 	f, err := fe.Open(name)
 	if err != nil {
 		return data, err

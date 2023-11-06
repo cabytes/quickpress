@@ -79,7 +79,7 @@ func SetAdminFS(adminFS embed.FS) {
 	_adminFS = adminFS
 }
 
-func SetupCLI() {
+func Run() {
 
 	wpCmd.CompletionOptions.HiddenDefaultCmd = true
 	wpCmd.AddCommand(postsCmd)

@@ -1,4 +1,4 @@
-module cabytes/wordpost
+module cabytes/quickpress
 
 go 1.21.3
 

@@ -121,7 +121,11 @@ func (t *Theme) Render(w io.Writer, view string, data map[string]any) error {
 }
 
 func NewTheme(themeFS ThemeFS) *Theme {
-	return &Theme{themeFS}
+	t := &Theme{themeFS}
+	if _, err := t.ReadMetadata(); err != nil {
+		panic(err)
+	}
+	return t
 }
 
 func NewThemeFromPlugin(path string) (t *Theme, err error) {
@@ -140,7 +144,7 @@ func NewThemeFromPlugin(path string) (t *Theme, err error) {
 
 	files := sym.(*embed.FS)
 
-	t = NewTheme(NewFakeEmbedFallback("./themes/clean/", *files))
+	t = NewTheme(NewEmbedFallbackFS("./themes/clean/", *files))
 
 	return
 }
