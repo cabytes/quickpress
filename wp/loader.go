@@ -3,11 +3,15 @@ package wp
 import (
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func Load(mux *chi.Mux, theme *Theme) {
+func LoadRoutes(mux *chi.Mux, theme *Theme) {
+
+	SetupAPI(mux)
 
 	RenderNotFound := func(w http.ResponseWriter) {
 
@@ -22,13 +26,31 @@ func Load(mux *chi.Mux, theme *Theme) {
 		}
 	}
 
+	mux.Get("/admin/*", func(w http.ResponseWriter, r *http.Request) {
+
+		path := strings.TrimPrefix(r.RequestURI, "/admin/")
+
+		if path == "" {
+			path = "index.html"
+		}
+
+		WriteMimeType(w, path)
+
+		path = "admin/dist/" + path
+
+		data, _ := _adminFS.ReadFile(path)
+
+		w.Write(data)
+	})
+
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 		posts, _ := GetPosts()
 
 		err := theme.Render(w, "index.html", D{
-			"title": "Home",
-			"posts": posts,
+			"title":      BlogTitle("Home"),
+			"blog_title": GetConfig("blog_title"),
+			"posts":      posts,
 		})
 
 		if err != nil {
@@ -46,8 +68,9 @@ func Load(mux *chi.Mux, theme *Theme) {
 		}
 
 		err = theme.Render(w, "post.html", D{
-			"title": "Post",
-			"post":  post,
+			"title":      BlogTitle(post.Title),
+			"blog_title": GetConfig("blog_title"),
+			"post":       post,
 		})
 
 		if err != nil {
@@ -71,6 +94,23 @@ func Load(mux *chi.Mux, theme *Theme) {
 	mux.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		RenderNotFound(w)
 	})
+}
 
-	mux.Route("/admin", AdminLoader)
+func WriteMimeType(w http.ResponseWriter, path string) {
+
+	h := w.Header()
+	ct := "Content-Type"
+
+	switch filepath.Ext(path) {
+	case ".html":
+		h.Add(ct, "text/html")
+	case ".css":
+		h.Add(ct, "text/css")
+	case ".js":
+		h.Add(ct, "text/javascript")
+	case ".png":
+		h.Add(ct, "image/png")
+	case ".jpg":
+		h.Add(ct, "image/jpg")
+	}
 }

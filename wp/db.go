@@ -3,6 +3,7 @@ package wp
 import (
 	"database/sql"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -12,7 +13,6 @@ func init() {
 	os.MkdirAll("data/", os.ModePerm)
 
 	db := GetDB()
-	defer db.Close()
 
 	db.Exec(
 		`CREATE TABLE IF NOT EXISTS config (
@@ -21,66 +21,40 @@ func init() {
 		);`,
 	)
 
-	db.Exec(
-		`CREATE TABLE IF NOT EXISTS posts (
-			id INTEGER NOT NULL PRIMARY KEY,
-			slug VARCHAR(255) NOT NULL,
-			title VARCHAR(120) NOT NULL,
-			description VARCHAR(500),
-			body TEXT
-		)`,
-	)
+	DefineConfig(map[string]string{
+		"blog_title_separator": " - ",
+		"blog_title":           "Awesome Blog",
+	})
 
-	db.Exec(`CREATE UNIQUE INDEX unique_post ON posts (slug)`)
+	db.Close()
 }
 
-func GetPosts() (posts []*Post, err error) {
+// Build blog title for title tag
+func BlogTitle(title string) string {
+	return strings.ToUpper(title[:1]) + title[1:] + GetConfig("blog_title_separator") + GetConfig("blog_title")
+}
+
+func DefineConfig(config map[string]string) error {
 
 	db := GetDB()
 	defer db.Close()
 
-	posts = make([]*Post, 0)
+	for name, value := range config {
 
-	rows, err := db.Query(`SELECT * FROM posts`)
+		var found = 0
 
-	for rows.Next() {
+		db.QueryRow("SELECT COUNT(*) as count FROM config WHERE key = $1", name).Scan(&found)
 
-		post := &Post{}
-
-		err = rows.Scan(
-			&post.ID,
-			&post.Slug,
-			&post.Title,
-			&post.Description,
-			&post.Body,
-		)
-
-		if err != nil {
-			return posts, err
+		if found == 0 {
+			db.Exec(
+				"INSERT INTO config (key,value) VALUES ($1, $2)",
+				name,
+				value,
+			)
 		}
-
-		posts = append(posts, post)
 	}
 
-	return
-}
-
-func GetPostBySlug(slug string) (post *Post, err error) {
-
-	db := GetDB()
-	defer db.Close()
-
-	post = &Post{}
-
-	err = db.QueryRow(`SELECT * FROM posts WHERE slug = $1`, slug).Scan(
-		&post.ID,
-		&post.Slug,
-		&post.Title,
-		&post.Description,
-		&post.Body,
-	)
-
-	return
+	return nil
 }
 
 func SetConfig(name, value string) {

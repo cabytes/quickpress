@@ -1,14 +1,28 @@
 package main
 
 import (
-	"cabytes/wordpost/wp"
+	. "cabytes/wordpost/wp"
 	"embed"
 )
 
-//go:embed themes/clean/*
+//go:embed themes/light/*
 var cleanThemeFS embed.FS
 
+//go:embed admin/dist/*
+var adminFS embed.FS
+
 func main() {
-	wp.SetDefaultTheme(wp.NewTheme(wp.NewFakeEmbedFallback("./themes/clean/", cleanThemeFS)))
-	wp.SetupCLI()
+
+	SetDefaultTheme(
+		NewTheme(
+			NewFakeEmbedFallback(
+				"./themes/light/",
+				cleanThemeFS,
+			),
+		),
+	)
+
+	SetAdminFS(adminFS)
+
+	SetupCLI()
 }

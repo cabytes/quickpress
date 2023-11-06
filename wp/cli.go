@@ -1,6 +1,7 @@
 package wp
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,7 +11,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var posts = &cobra.Command{
+var Version = "0.0.0"
+
+var postsCmd = &cobra.Command{
 	Use: "posts",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("List posts")
@@ -18,24 +21,49 @@ var posts = &cobra.Command{
 	},
 }
 
-var run = &cobra.Command{
-	Use: "run",
+var themeCmd = &cobra.Command{
+	Use: "theme",
 	Run: func(cmd *cobra.Command, args []string) {
-
-		pass, _ := cmd.Flags().GetString("password")
-
-		fmt.Println("Starting with password:", pass)
-
-		mux := chi.NewMux()
-		Load(mux, _defaultTheme)
-		http.ListenAndServe(":8085", mux)
+		fmt.Println("Theme")
+		os.Exit(0)
 	},
 }
 
-var wp = &cobra.Command{
-	Use: "wp",
+var versionCmd = &cobra.Command{
+	Use: "version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(Version)
+		os.Exit(0)
+	},
+}
+
+var wpCmd = &cobra.Command{
+	Use:   "wp",
+	Short: "Run blog",
 	Run: func(cmd *cobra.Command, args []string) {
 
+		listen, err := cmd.Flags().GetString("listen")
+
+		if err != nil {
+			panic(err)
+		}
+
+		password, err := cmd.Flags().GetString("password")
+
+		if err != nil {
+			panic(err)
+		}
+
+		if listen == "" {
+			listen = ":8585"
+		}
+
+		log.Default().Println("Set admin password:", password)
+		log.Default().Println("Listen:", listen)
+
+		mux := chi.NewMux()
+		LoadRoutes(mux, _defaultTheme)
+		http.ListenAndServe(listen, mux)
 	},
 }
 
@@ -45,14 +73,24 @@ func SetDefaultTheme(theme *Theme) {
 	_defaultTheme = theme
 }
 
+var _adminFS embed.FS
+
+func SetAdminFS(adminFS embed.FS) {
+	_adminFS = adminFS
+}
+
 func SetupCLI() {
 
-	wp.AddCommand(posts)
-	wp.AddCommand(run)
+	wpCmd.CompletionOptions.HiddenDefaultCmd = true
+	wpCmd.AddCommand(postsCmd)
+	wpCmd.AddCommand(themeCmd)
+	wpCmd.AddCommand(versionCmd)
 
-	run.PersistentFlags().String("password", "", "Admin password")
+	wpCmd.PersistentFlags().String("listen", "", "Listen address")
+	wpCmd.PersistentFlags().String("theme", "", "Run with specific theme")
+	wpCmd.PersistentFlags().String("password", "", "Admin password")
 
-	if err := wp.Execute(); err != nil {
+	if err := wpCmd.Execute(); err != nil {
 		log.Default().Println(err)
 	}
 }

@@ -59,19 +59,7 @@ func (t *Theme) Name() string {
 
 func (t *Theme) RenderAsset(w http.ResponseWriter, asset string) error {
 
-	h := w.Header()
-	ct := "Content-Type"
-
-	switch filepath.Ext(asset) {
-	case ".css":
-		h.Add(ct, "text/css")
-	case ".js":
-		h.Add(ct, "text/javascript")
-	case ".png":
-		h.Add(ct, "image/png")
-	case ".jpg":
-		h.Add(ct, "image/jpg")
-	}
+	WriteMimeType(w, asset)
 
 	return t.Render(w, strings.TrimPrefix(asset, "/"), nil)
 }

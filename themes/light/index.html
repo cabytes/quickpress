@@ -1,13 +1,9 @@
 {{template "layout" .}}
 
 {{define "contents"}}
-    {{template "header" .}}
-    
     <ul>
         {{range .posts}}
-        <li>
-            <a href="{{.Slug}}">{{.Title}}</a>
-        </li>
+        <li><a href="{{.Slug}}">{{.Title}} - {{.Description}}</a></li>
         {{end}}
     </ul>
 {{end}}

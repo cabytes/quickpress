@@ -1,0 +1,27 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 20px;
+}
+
+header {
+    height: 60px;
+    border-bottom: 1px solid #DDD;
+}
+
+header .wrapper {
+    height: 100%;
+}
+
+.wrapper {
+    width: 700px;
+    margin: 0 auto;
+}
+
+.vc {
+    display: flex;
+    align-items: center;
+}

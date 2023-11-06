@@ -1,0 +1,27 @@
+{{define "layout"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{.title}}</title>
+    <meta name="description" content="{{.post.Description}}"/>
+    <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <header>
+        <div class="vc wrapper">
+            <a href="/">{{.blog_title}}</a> | 
+            <a href="/admin/">Admin</a>
+        </div>
+    </header>
+    <main>
+        <div class="wrapper">
+            {{template "contents" .}}
+        </div>
+    </main>
+</body>
+
+</html>
+{{end}}

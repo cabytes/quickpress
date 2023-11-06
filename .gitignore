@@ -3,3 +3,6 @@ bin/
 __debug_bin*
 .DS_Store
 data/
+admin/dist/
+admin/.angular/*
+admin/node_modules/
