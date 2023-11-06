@@ -1,4 +1,4 @@
-package wp
+package runtime
 
 import (
 	"embed"
@@ -49,7 +49,7 @@ func (fe *EmbedFallbackFS) ReadDir(name string) (entries []fs.DirEntry, err erro
 	entries, err = os.ReadDir(fullPath)
 
 	if err != nil {
-		return fe.embeded.ReadDir(fullPath)
+		return fe.embeded.ReadDir(name)
 	}
 
 	return

@@ -1,16 +1,13 @@
-package wp
+package runtime
 
 import (
 	"database/sql"
-	"os"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func init() {
-
-	os.MkdirAll("data/", os.ModePerm)
 
 	db := GetDB()
 
@@ -98,7 +95,8 @@ func GetConfig(name string) (v string) {
 
 func GetDB() *sql.DB {
 
-	db, err := sql.Open("sqlite3", "data/db")
+	// TODO: Change with path from zine
+	db, err := sql.Open("sqlite3", "/Users/cosmin/Work/NoteZine/data/db")
 
 	if err != nil {
 		panic(err)

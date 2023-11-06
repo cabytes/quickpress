@@ -1,4 +1,4 @@
-module cabytes/quickpress
+module cabytes/zine
 
 go 1.21.3
 

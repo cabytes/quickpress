@@ -1,4 +1,4 @@
-package wp
+package runtime
 
 import (
 	"archive/zip"
@@ -22,7 +22,8 @@ type ThemeFS interface {
 }
 
 type Theme struct {
-	fs ThemeFS
+	fs    ThemeFS
+	funcs template.FuncMap
 }
 
 func (t *Theme) ReadMetadata() (meta map[string]any, err error) {
@@ -64,6 +65,10 @@ func (t *Theme) RenderAsset(w http.ResponseWriter, asset string) error {
 	return t.Render(w, strings.TrimPrefix(asset, "/"), nil)
 }
 
+func (t *Theme) SetFuncs(funcs template.FuncMap) {
+	t.funcs = funcs
+}
+
 func (t *Theme) Render(w io.Writer, view string, data map[string]any) error {
 
 	f, err := t.fs.Open(view)
@@ -84,7 +89,7 @@ func (t *Theme) Render(w io.Writer, view string, data map[string]any) error {
 		return err
 	}
 
-	var tpl = template.New("")
+	var tpl = template.New("").Funcs(t.funcs)
 
 	for _, entry := range entries {
 		if filepath.Ext(entry.Name()) == ".html" {
@@ -121,7 +126,7 @@ func (t *Theme) Render(w io.Writer, view string, data map[string]any) error {
 }
 
 func NewTheme(themeFS ThemeFS) *Theme {
-	t := &Theme{themeFS}
+	t := &Theme{fs: themeFS}
 	if _, err := t.ReadMetadata(); err != nil {
 		panic(err)
 	}

@@ -3,7 +3,7 @@
 {{define "contents"}}
     <ul>
         {{range .posts}}
-        <li><a href="{{.Slug}}">{{.Title}} - {{.Description}}</a></li>
+        <li><a href="{{href .Slug}}">{{.Title}} - {{.Description}}</a></li>
         {{end}}
     </ul>
 {{end}}

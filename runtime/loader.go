@@ -1,13 +1,16 @@
-package wp
+package runtime
 
 import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
+
+func Handler(w http.ResponseWriter, r *http.Request) {
+
+}
 
 func LoadRoutes(mux *chi.Mux, theme *Theme) {
 
@@ -25,24 +28,24 @@ func LoadRoutes(mux *chi.Mux, theme *Theme) {
 			log.Default().Println(err)
 		}
 	}
+	/*
+		mux.Get("/admin/*", func(w http.ResponseWriter, r *http.Request) {
 
-	mux.Get("/admin/*", func(w http.ResponseWriter, r *http.Request) {
+			path := strings.TrimPrefix(r.RequestURI, "/admin/")
 
-		path := strings.TrimPrefix(r.RequestURI, "/admin/")
+			if path == "" {
+				path = "index.html"
+			}
 
-		if path == "" {
-			path = "index.html"
-		}
+			WriteMimeType(w, path)
 
-		WriteMimeType(w, path)
+			path = "admin/dist/" + path
 
-		path = "admin/dist/" + path
+			data, _ := adminFS.ReadFile(path)
 
-		data, _ := _adminFS.ReadFile(path)
-
-		w.Write(data)
-	})
-
+			w.Write(data)
+		})
+	*/
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
 		posts, _ := GetPosts()

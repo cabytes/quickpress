@@ -1,4 +1,4 @@
-package wp
+package runtime
 
 import "time"
 

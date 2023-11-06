@@ -1,9 +1,9 @@
-package main
+package zine
 
 import "embed"
 
 //go:embed themes/light/*
-var LightThemeFS embed.FS
+var lightThemeFS embed.FS
 
 //go:embed admin/dist/*
-var AdminFS embed.FS
+var adminFS embed.FS
