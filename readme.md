@@ -8,9 +8,9 @@ Library for easily create blogging for your golang app or directly by using the 
 mux := chi.NewMux()
 
 app := zine.New(
-    zine.DataPath("../../data"),
+    zine.DataPath("/zine"),
     zine.BaseHref("/blog"),
-    zine.LoadTheme("../../themes/light/", light.Files),
+    zine.LoadTheme("themes/light/", light.Files),
     zine.AuthHook(func(username, password string) zine.User {
         if username == "zine" && password == "zine" {
             return &BlogUser{
