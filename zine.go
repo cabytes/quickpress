@@ -2,6 +2,7 @@ package zine
 
 import (
 	"cabytes/zine/runtime"
+	"database/sql"
 	"embed"
 	"html/template"
 	"log"
@@ -23,9 +24,10 @@ type User interface {
 }
 
 type ZineApp struct {
-	theme    *runtime.Theme
-	baseHref string
-	dataPath string
+	theme      *runtime.Theme
+	baseHref   string
+	dataPath   string
+	repository *runtime.Repository
 }
 
 func (za *ZineApp) setBaseHref(href string) {
@@ -55,12 +57,12 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if r.RequestURI == "/" || r.RequestURI == za.baseHref {
 
-		posts, _ := runtime.GetPosts()
+		posts, _ := za.repository.GetPosts()
 
 		data := runtime.D{
 			"posts":      posts,
-			"title":      runtime.BlogTitle("Home"),
-			"blog_title": runtime.GetConfig("blog_title"),
+			"title":      za.repository.BlogTitle("Home"),
+			"blog_title": za.repository.GetConfig("blog_title"),
 		}
 
 		if err := za.theme.Render(w, "index.html", data); err != nil {
@@ -81,6 +83,8 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Default().Println(err)
 		}
+
+		return
 	}
 
 	if strings.Index(r.RequestURI, "/admin") == 0 {
@@ -103,7 +107,7 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		slug := strings.TrimPrefix(r.RequestURI, za.baseHref+"/")
 
-		post, err := runtime.GetPostBySlug(slug)
+		post, err := za.repository.GetPostBySlug(slug)
 
 		if err != nil {
 			http.NotFound(w, r)
@@ -111,8 +115,8 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = za.theme.Render(w, "post.html", runtime.D{
-			"title":      runtime.BlogTitle(post.Title),
-			"blog_title": runtime.GetConfig("blog_title"),
+			"title":      za.repository.BlogTitle(post.Title),
+			"blog_title": za.repository.GetConfig("blog_title"),
 			"post":       post,
 		})
 
@@ -123,12 +127,31 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func New(opts ...Opt) *ZineApp {
-	app := &ZineApp{}
+func New(opts ...Opt) (app *ZineApp, err error) {
+
+	app = &ZineApp{}
+
 	for _, opt := range opts {
 		opt.apply(app)
 	}
-	return app
+
+	db, err := sql.Open("sqlite3", filepath.Clean(app.dataPath+"/db"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(1)
+
+	repo, err := runtime.NewRepository(db)
+
+	if err != nil {
+		return nil, err
+	}
+
+	app.repository = repo
+
+	return
 }
 
 type AuthHookFunc func(username, password string) User

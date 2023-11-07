@@ -58,7 +58,7 @@ var zineCmd = &cobra.Command{
 		port, _ := cmd.Flags().GetString("listen")
 		data, _ := cmd.Flags().GetString("data")
 
-		app := zine.New(
+		app, err := zine.New(
 
 			// Set data path for storage
 			zine.DataPath(data),
@@ -77,6 +77,10 @@ var zineCmd = &cobra.Command{
 				return nil
 			}),
 		)
+
+		if err != nil {
+			panic(err)
+		}
 
 		if err := http.ListenAndServe(port, app); err != nil {
 			fmt.Println(err)

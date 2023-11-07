@@ -23,11 +23,15 @@ func main() {
 		http.Redirect(w, r, "/blog", http.StatusMovedPermanently)
 	})
 
-	app := zine.New(
+	app, err := zine.New(
 		zine.DataPath("../../data"),
 		zine.BaseHref("/blog"),
 		zine.LoadTheme("../../themes/light/", light.Files),
 	)
+
+	if err != nil {
+		panic(err)
+	}
 
 	mux.Handle("/blog*", app)
 
