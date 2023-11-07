@@ -83,6 +83,22 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if strings.Index(r.RequestURI, "/admin") == 0 {
+		path := strings.TrimPrefix(r.RequestURI, "/admin")
+		if path == "/" || path == "" {
+			path = "index.html"
+		}
+		path = filepath.Clean("admin/dist/" + path)
+		runtime.WriteMimeType(w, path)
+		data, err := adminFS.ReadFile(path)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		w.Write(data)
+		return
+	}
+
 	if strings.Index(r.RequestURI, za.baseHref) == 0 && len(r.RequestURI) > len(za.baseHref) {
 
 		slug := strings.TrimPrefix(r.RequestURI, za.baseHref+"/")
@@ -104,6 +120,7 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			log.Default().Println(err)
 		}
 	}
+
 }
 
 func New(opts ...Opt) *ZineApp {

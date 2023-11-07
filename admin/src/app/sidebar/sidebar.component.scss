@@ -1,0 +1,13 @@
+:host {
+    height: 100%;
+    width: 200px;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    main {
+        flex: 1;
+    }
+    footer {
+        height: 50px;
+    }
+}

@@ -1,0 +1,16 @@
+:host {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+}
+
+:host([data-theme="light"]) {
+    --background: #FFF;
+    --border-color: #DDD;
+}
+
+:host([data-theme="dark"]) {
+    --background: #19191C;
+    --border-color: #303033;
+}

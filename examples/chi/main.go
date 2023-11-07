@@ -19,15 +19,15 @@ func main() {
 
 	mux := chi.NewMux()
 
+	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/blog", http.StatusMovedPermanently)
+	})
+
 	app := zine.New(
 		zine.DataPath("../../data"),
 		zine.BaseHref("/blog"),
 		zine.LoadTheme("../../themes/light/", light.Files),
 	)
-
-	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/blog", http.StatusMovedPermanently)
-	})
 
 	mux.Handle("/blog*", app)
 

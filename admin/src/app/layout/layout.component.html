@@ -1,0 +1,15 @@
+<div *ngIf="minimal; else full">
+    <router-outlet></router-outlet>
+</div>
+
+<ng-template #full>
+    <zine-header>
+        HEADER
+    </zine-header>
+    <div class="contents">
+        <zine-sidebar></zine-sidebar>
+        <main>
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</ng-template>
