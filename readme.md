@@ -7,10 +7,6 @@ Library for easily create blogging for your golang app or directly by using the 
 ```
 mux := chi.NewMux()
 
-mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
-    http.Redirect(w, r, "/blog", http.StatusMovedPermanently)
-})
-
 app := zine.New(
     zine.DataPath("../../data"),
     zine.BaseHref("/blog"),
