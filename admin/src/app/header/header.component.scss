@@ -4,8 +4,13 @@
     display: flex;
     align-items: center;
     padding: 0 10px;
+    
     a {
         width: 30px;
         height: 30px;
+    }
+
+    .toolbar {
+        margin-left: 10px;
     }
 }

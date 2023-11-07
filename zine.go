@@ -1,15 +1,16 @@
 package zine
 
 import (
+	"bytes"
 	"cabytes/zine/runtime"
 	"database/sql"
 	"embed"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 type Opt interface {
@@ -87,19 +88,41 @@ func (za *ZineApp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.Index(r.RequestURI, "/admin") == 0 {
-		path := strings.TrimPrefix(r.RequestURI, "/admin")
+	if strings.Index(r.RequestURI, "/admin") == 0 ||
+		strings.Index(r.RequestURI, za.baseHref+"/admin") == 0 {
+
+		path := strings.TrimPrefix(r.RequestURI, za.baseHref)
+		path = strings.TrimPrefix(path, "/admin")
+
 		if path == "/" || path == "" {
 			path = "index.html"
 		}
+
 		path = filepath.Clean("admin/dist/" + path)
+
 		runtime.WriteMimeType(w, path)
+
 		data, err := adminFS.ReadFile(path)
+
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
-		w.Write(data)
+
+		t, err := template.New("").Parse(string(data))
+
+		if err != nil {
+			panic(err)
+		}
+
+		var buf bytes.Buffer
+
+		if err := t.Execute(&buf, runtime.D{"baseHref": za.baseHref + "/admin/"}); err != nil {
+			panic(err)
+		}
+
+		w.Write(buf.Bytes())
+
 		return
 	}
 
