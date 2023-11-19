@@ -6,27 +6,55 @@ import (
 	"testing"
 )
 
-func TestGetBySlug(t *testing.T) {
+func testingRepo() (repo *Repository, err error) {
 
 	tmpf, err := os.CreateTemp(".", "testdb")
 
-	defer os.Remove(tmpf.Name())
-
 	if err != nil {
-		t.Fatal(err)
-		return
+		return nil, err
 	}
 
 	db, err := sql.Open("sqlite3", tmpf.Name())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewRepository(db)
+}
+
+func TestGetPosts(t *testing.T) {
+
+	repo, err := testingRepo()
 
 	if err != nil {
 		t.Fatal(err.Error())
 		return
 	}
 
-	db.SetMaxOpenConns(1)
+	repo.Create(&Post{
+		Slug: "test1",
+	})
 
-	repo, err := NewRepository(db)
+	repo.Create(&Post{
+		Slug: "test2",
+	})
+
+	posts, err := repo.GetPosts()
+
+	if err != nil {
+		t.Fatal(err.Error())
+		return
+	}
+
+	if len(posts) != 2 {
+		t.Fatal("Expected two posts")
+	}
+}
+
+func TestGetBySlug(t *testing.T) {
+
+	repo, err := testingRepo()
 
 	if err != nil {
 		t.Fatal(err.Error())
@@ -47,6 +75,4 @@ func TestGetBySlug(t *testing.T) {
 	if post == nil {
 		t.Fatal("Expected a post for test slug")
 	}
-
-	db.Close()
 }

@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"context"
 	"database/sql"
 	"strings"
 	"time"
@@ -177,7 +178,8 @@ func (repo *Repository) GetPostBySlug(slugInput string) (post *Post, err error) 
 
 func (repo *Repository) Create(post *Post) (err error) {
 
-	_, err = repo.db.Exec(
+	_, err = repo.db.ExecContext(
+		context.Background(),
 		"INSERT INTO posts (type,slug,title,description,body,created_at) VALUES ($1,$2,$3,$4,$5,$6)",
 		"post",
 		slug.Make(post.Slug),
