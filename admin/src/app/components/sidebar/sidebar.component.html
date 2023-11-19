@@ -1,0 +1,23 @@
+<main>
+    <zine-sidebar-menu>
+        <zine-sidebar-menu-item href="/" icon="dashboard" text="Dashboard"></zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/posts" icon="post_add" text="Posts">
+            <zine-sidebar-menu-item href="/posts/create" icon="post_add" text="Create Post"></zine-sidebar-menu-item>
+        </zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/pages" icon="pages" text="Pages"></zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/media" icon="home_storage" text="Media"></zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/comments" icon="forum" text="Comments"></zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/users" icon="group" text="Users"></zine-sidebar-menu-item>
+        <zine-sidebar-menu-item href="/settings" icon="settings" text="Settings"></zine-sidebar-menu-item>
+    </zine-sidebar-menu>
+</main>
+
+<footer>
+    <div class="theme-switcher">
+        <label class="switch">
+            <input type="checkbox" [checked]="themeChangerChecked" #toggler (change)="onThemeChange(toggler.checked)"/>
+            <span class="slider round"></span>
+            Toggle Theme
+        </label>
+    </div>
+</footer>

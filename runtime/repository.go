@@ -6,6 +6,8 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/gosimple/slug"
 )
 
 type Post struct {
@@ -154,7 +156,9 @@ func (repo *Repository) GetPosts() (posts []*Post, err error) {
 	return
 }
 
-func (repo *Repository) GetPostBySlug(slug string) (post *Post, err error) {
+func (repo *Repository) GetPostBySlug(slugInput string) (post *Post, err error) {
+
+	slug := slug.Make(slugInput)
 
 	post = &Post{}
 

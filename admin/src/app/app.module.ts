@@ -3,18 +3,23 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { LoaderComponent } from './app.component';
-import { LayoutComponent } from './layout/layout.component';
-import { AuthComponent } from './auth/auth.component';
-import { HeaderComponent } from './header/header.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { LogoComponent } from './logo/logo.component';
-import { PostsComponent } from './posts/posts.component';
-import { MediaComponent } from './media/media.component';
-import { UsersComponent } from './users/users.component';
-import { SettingsComponent } from './settings/settings.component';
-import { PagesComponent } from './pages/pages.component';
-import { CommentsComponent } from './comments/comments.component';
+import { LayoutComponent } from './components/layout/layout.component';
+import { AuthComponent } from './components/auth/auth.component';
+import { HeaderComponent } from './components/header/header.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { LogoComponent } from './components/logo/logo.component';
+import { PostsComponent } from './components/posts/posts.component';
+import { MediaComponent } from './components/media/media.component';
+import { UsersComponent } from './components/users/users.component';
+import { SettingsComponent } from './components/settings/settings.component';
+import { PagesComponent } from './components/pages/pages.component';
+import { CommentsComponent } from './components/comments/comments.component';
+import { SidebarMenuItemComponent } from './components/sidebar-menu-item/sidebar-menu-item.component';
+import { SidebarMenuComponent } from './components/sidebar-menu/sidebar-menu.component';
+import { AvatarComponent } from './components/avatar/avatar.component';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { ApiInterceptor } from './core/ApiInterceptor';
 
 @NgModule({
   declarations: [
@@ -30,13 +35,19 @@ import { CommentsComponent } from './comments/comments.component';
     UsersComponent,
     SettingsComponent,
     PagesComponent,
-    CommentsComponent
+    CommentsComponent,
+    SidebarMenuItemComponent,
+    SidebarMenuComponent,
+    AvatarComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: false },
+  ],
   bootstrap: [LoaderComponent]
 })
 export class AppModule { }

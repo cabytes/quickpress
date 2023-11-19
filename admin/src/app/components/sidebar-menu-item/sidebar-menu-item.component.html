@@ -1,0 +1,12 @@
+<li>
+    <a [routerLink]="[href]">
+        <span class="material-symbols-outlined">{{icon}}</span>
+        <span class="text">{{text}}</span>
+        <span *ngIf="children.length" class="expand material-symbols-outlined">
+            {{!expanded ? 'expand_more' : 'expand_less'}}
+        </span>
+    </a>
+    <div *ngIf="expanded" class="children">
+        <ng-content></ng-content>
+    </div>
+</li>

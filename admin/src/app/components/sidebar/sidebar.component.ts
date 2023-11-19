@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ThemeService } from '../theme.service';
+import { ThemeService } from '../../core/theme.service';
 
 @Component({
   selector: 'zine-sidebar',
