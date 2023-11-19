@@ -174,3 +174,18 @@ func (repo *Repository) GetPostBySlug(slugInput string) (post *Post, err error) 
 
 	return
 }
+
+func (repo *Repository) Create(post *Post) (err error) {
+
+	_, err = repo.db.Exec(
+		"INSERT INTO posts (type,slug,title,description,body,created_at) VALUES ($1,$2,$3,$4,$5,$6)",
+		"post",
+		slug.Make(post.Slug),
+		post.Title,
+		post.Description,
+		post.Body,
+		time.Now(),
+	)
+
+	return
+}
